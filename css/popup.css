@@ -1,0 +1,218 @@
+@charset "UTF-8";
+/**
+ * Popup Styles
+ */
+#app {
+  /* 添加间距和边框的通用容器类 */
+}
+#app .container {
+  position: relative;
+  width: 100%;
+  border: unset;
+  padding: 10px 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0;
+  height: 100vh;
+  /* 顶部 */
+  /* 中部 */
+}
+#app .container h1 {
+  margin: 0;
+}
+#app .container section.top {
+  padding: 0 10px;
+  /* 过滤器 */
+}
+#app .container section.top .banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#app .container section.top .banner .text {
+  text-wrap: nowrap;
+  color: #999;
+}
+#app .container section.top .filter-list {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+#app .container section.top .filter-list .filter {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  flex: 1;
+}
+#app .container section.top .filter-list .filter label, #app .container section.top .filter-list .filter select, #app .container section.top .filter-list .filter input {
+  width: 100%;
+  height: 22px;
+  border: none;
+  border-radius: 8px;
+}
+#app .container section.top .filter-list .filter label {
+  display: block;
+  font-size: 10px;
+  height: auto;
+  color: #999;
+}
+#app .container section.top .filter-list .filter select {
+  outline: none;
+}
+#app .container section.top .filter-list .filter select::after {
+  content: "";
+  outline: none;
+}
+#app .container section.result {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: calc(100vh - 86px);
+  padding: 10px 0 20px 0;
+  flex: 1;
+  /* 添加滚动条样式覆盖 */
+}
+#app .container section.result .down-button {
+  display: none;
+}
+#app .container section.result .result {
+  display: none;
+  margin-top: 20px;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+#app .container section.result .resultImage {
+  --image-size: 120px;
+  --image-per-row: 4;
+  border-radius: 8px;
+  width: 100%;
+  min-height: 100px;
+  padding: 0 10px;
+  display: grid;
+  row-gap: 10px;
+  grid-template-columns: repeat(var(--image-per-row), 1fr);
+  justify-items: center;
+}
+@media (min-width: 360px) and (max-width: 774px) {
+  #app .container section.result .resultImage {
+    --image-size: 100%;
+    --image-per-row: 1;
+  }
+}
+#app .container section.result .resultImage .cell {
+  position: relative;
+  width: var(--image-size);
+  height: var(--image-size);
+  overflow: hidden;
+  padding: 0 4px;
+  border-radius: 8px;
+  background-color: #3c3c3c;
+}
+#app .container section.result .resultImage .cell .cell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+}
+#app .container section.result .resultImage .cell .cell-header .button-list {
+  display: flex;
+  column-gap: 8px;
+}
+#app .container section.result .resultImage .cell .cell-header .button-list .checkbox-button-link {
+  display: none;
+  height: 100%;
+}
+#app .container section.result .resultImage .cell .cell-header .button-list .checkbox-button-link iconpark-icon {
+  pointer-events: none;
+}
+#app .container section.result .resultImage .cell .cell-header .info-list {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 4px;
+  pointer-events: none;
+}
+#app .container section.result .resultImage .cell .cell-header .info-list .item {
+  padding: 4px 4px;
+  background-color: #282828;
+  border-radius: 4px;
+  color: #ebebeb;
+  font-size: 12px;
+}
+#app .container section.result .resultImage .cell .cell-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  pointer-events: none;
+}
+#app .container section.result .resultImage .cell .cell-footer .text {
+  text-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#app .container section.result .resultImage .cell .img-container {
+  width: 100%;
+  pointer-events: none;
+}
+#app .container section.result .resultImage .cell .img-container img {
+  width: 100%;
+}
+#app .container section.result .resultImage .cell .border {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  border: 3px solid #ebebeb;
+  border-radius: 8px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+#app .container section.result .resultImage .cell.exclude {
+  display: none;
+}
+#app .container section.result .resultImage .cell.selected .border {
+  display: initial;
+}
+#app .container section.result .resultImage .cell.selected .cell-header .button-list .checkbox-button-link {
+  display: inline;
+}
+#app .container section.result .resultImage .cell:hover .cell-header .button-list .checkbox-button-link {
+  display: inline;
+}
+#app .container section.result::-webkit-scrollbar {
+  width: 8px;
+}
+#app .container section.result::-webkit-scrollbar-thumb {
+  background: #884a68;
+  border-radius: 4px;
+  border: 1px solid #122436;
+}
+#app .container section.result::-webkit-scrollbar-thumb:hover {
+  background: #dd77a8;
+}
+#app .container .top-button {
+  position: absolute;
+  right: calc(50% - 16px);
+  bottom: 4px;
+  z-index: 20;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.3);
+  background-blend-mode: difference;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#app .container .top-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/*# sourceMappingURL=popup.css.map */

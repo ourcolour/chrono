@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Fetcher</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <h1>Image Fetcher</h1>
+        <div class="row inline">
+            <!-- 标签 -->
+            <div class="row">
+                <label>标签</label>
+                <input type="text" class="tagNameInput" value="img">
+            </div>
+            <!-- 属性 -->
+            <div class="row">
+                <label>属性(默认：src)</label>
+                <input type="text" class="attrInput" value="">
+            </div>
+        </div>
+        <!-- 匹配正则 -->
+        <div class="row">
+            <label>链接匹配(正则)</label>
+            <textarea class="regex" rows="1" placeholder="请输入正则..."></textarea>
+        </div>
+
+        <!-- 结果正则 -->
+        <div class="row">
+            <label>链接提取(正则捕获组)</label>
+            <textarea class="resultRegex" rows="1" placeholder="请输入正则..."></textarea>
+        </div>
+
+        <div class="row button-panel">
+            <div class="left">
+                <button class="fetch-button">获取</button>
+                <button class="down-button" disabled>下载</button>
+            </div>
+            <div class="right">
+                <button class="loadConfigButton">加载配置</button>
+                <button class="saveConfigButton">保存配置</button>
+            </div>
+        </div>
+        <!-- 结果 -->
+        <div class="row">
+            <div class="resultImage">(无)</div>
+            <div class="result">(无)</div>
+        </div>
+    </div>
+
+    <div class="bottom-panel">
+        <div class="left">
+            <button class="fetch-button">获取</button>
+            <button class="down-button" disabled>下载</button>
+        </div>
+        <div class="right">
+            <a href="javascript:;" class="top-button">TOP ↑</a>
+        </div>
+    </div>
+</div>
+<script src="js/popup.js"></script>
+</body>
+</html>

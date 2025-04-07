@@ -1,0 +1,23 @@
+$deviceSize : (
+        'sidePanel': (
+                360px,
+                774px
+        ),
+        'popup': (
+                600px, 1200px
+        ),
+);
+
+@mixin fit($device) {
+  $config : map-get($deviceSize, $device);
+
+  @if 'list' == type-of($config) {
+    @media (min-width : nth($config, 1)) and (max-width : nth($config, 2)) {
+      @content;
+    }
+  } @else {
+    @media (min-width : $config) {
+      @content;
+    }
+  }
+}

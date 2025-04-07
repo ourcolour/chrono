@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Fetcher</title>
+    <!--    <link rel="stylesheet" href="assets/css/all.css">-->
+    <script defer src="js/iconpark.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <section class="top">
+            <div class="banner">
+                <div class="button-list">
+                    <button class="button fetch-button">
+                        <iconpark-icon name="refresh" size="12" color="#ebebeb"></iconpark-icon>
+                        刷新
+                    </button>
+                    <button class="button down-button">
+                        <iconpark-icon name="download-one" size="12" color="#ebebeb"></iconpark-icon>
+                        下载 (<span class="selected-count">0</span>)
+                    </button>
+                </div>
+                <div class="text">
+                    发现 <span class="total-count">0</span> 张图片
+                </div>
+            </div>
+            <div class="row filter-list">
+                <!-- size -->
+                <div class="filter">
+                    <label>SIZE</label>
+                    <select name="filter[size]">
+                        <option value="">ANY</option>
+                        <option value="small">Small (<200x200)</option>
+                        <option value="medium">Medium (<800x600)</option>
+                        <option value="large">Large (>=800x600)</option>
+                    </select>
+                </div>
+                <!-- format -->
+                <div class="filter">
+                    <label>FORMAT</label>
+                    <select name="filter[format]">
+                        <option value="">ANY</option>
+                        <option value="jpg">JPG</option>
+                        <option value="png">PNG</option>
+                        <option value="gif">GIF</option>
+                        <option value="TIFF">TIFF</option>
+                    </select>
+                </div>
+                <!-- layout -->
+                <div class="filter">
+                    <label>LAYOUT</label>
+                    <select name="filter[layout]">
+                        <option value="">ANY</option>
+                        <option value="wide">Wide</option>
+                        <option value="tall">Tall</option>
+                        <option value="square">Square</option>
+                    </select>
+                </div>
+                <!-- url -->
+                <div class="filter">
+                    <label>URL</label>
+                    <input type="text" name="filter[url]"/>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结果 -->
+        <section class="result">
+            <div class="row">
+                <div class="resultImage">
+                    <!--                <div class="cell">-->
+                    <!--                    <div class="cell-header">-->
+                    <!--                        <div class="button-list">-->
+                    <!--                <iconpark-icon name="square" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                <iconpark-icon name="share" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                <iconpark-icon name="zoom-in" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="info-list">-->
+                    <!--                            <span class="item">JPG</span>-->
+                    <!--                            <span class="item">200x150</span>-->
+                    <!--                top-button            <span class="item">123 B</span>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <img src="https://piccdn.jbk010.cc/digital/video/h_1293zrk00001/h_1293zrk00001pl.jpg" alt="https://piccdn.jbk010.cc/digital/video/h_1293zrk00001/h_1293zrk00001pl.jpg">-->
+                    <!--                </div>-->
+                </div>
+                <div class="result"></div>
+            </div>
+        </section>
+
+        <button class="button top-button">
+            <iconpark-icon name="to-top" size="18" color="#ebebeb"></iconpark-icon>
+        </button>
+    </div>
+</div>
+<script src="js/popup.js"></script>
+</body>
+</html>

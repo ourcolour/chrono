@@ -1,0 +1,89 @@
+@charset "UTF-8";
+html:has(#app),
+body:has(#app) {
+  margin: 0;
+  padding: 0;
+  color: #ebebeb;
+  background-color: #242424;
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* 基础布局样式 */
+  /* 标题样式 */
+  /* 按钮样式 */
+  /* input 样式*/
+  /* 超链接样式 */
+  /* 对话框样式 */
+  /* 通用按钮 */
+}
+#app * {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+}
+#app h1 {
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+#app button {
+  background-color: #556dea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#app button:hover {
+  background-color: #3d4fac;
+  color: #fff;
+}
+#app button:disabled {
+  background-color: #999;
+}
+#app input,
+#app textarea {
+  height: 32px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+}
+#app textarea {
+  padding: 10px 10px;
+}
+#app input:focus,
+#app textarea:focus {
+  border-color: #556dea;
+  border-width: 2px;
+}
+#app a, #app a:visited, #app a:hover {
+  text-decoration: none;
+  color: black;
+}
+#app a:hover {
+  color: red;
+}
+#app dialog {
+  background-color: transparent;
+}
+#app .button {
+  background-color: #242424;
+  border: 1px solid #ebebeb;
+  color: #ebebeb;
+  height: 24px;
+  font-size: 12px;
+  margin: 0;
+  padding: 4px 8px;
+}
+
+/*# sourceMappingURL=common.css.map */

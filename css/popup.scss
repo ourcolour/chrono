@@ -1,0 +1,279 @@
+/**
+ * Popup Styles
+ */
+@use './media.scss';
+
+#app {
+  /* 添加间距和边框的通用容器类 */
+  .container {
+    position       : relative;
+    width          : 100%;
+    border         : unset;
+    padding        : 10px 10px;
+    overflow       : hidden;
+    display        : flex;
+    flex-direction : column;
+    row-gap        : 0;
+    height         : 100vh;
+
+    h1 {
+      margin : 0;
+    }
+
+    /* 顶部 */
+    section.top {
+      padding : 0 10px;
+
+      .banner {
+        display         : flex;
+        justify-content : space-between;
+        align-items     : center;
+
+        .text {
+          text-wrap : nowrap;
+          color     : #999;
+        }
+      }
+
+      /* 过滤器 */
+      .filter-list {
+        display         : flex;
+        flex-direction  : row;
+        column-gap      : 8px;
+        justify-content : space-between;
+        margin          : 10px 0;
+
+        .filter {
+          display        : flex;
+          flex-direction : column;
+          row-gap        : 8px;
+          flex           : 1;
+
+          label, select, input {
+            width         : 100%;
+            height        : 22px;
+            border        : none;
+            border-radius : 8px;
+          }
+
+          label {
+            display   : block;
+            font-size : 10px;
+            height    : auto;
+            color     : #999;
+          }
+
+          select {
+            outline : none;
+          }
+
+          select::after {
+            content : '';
+            outline : none;
+          }
+
+          input {
+          }
+        }
+      }
+    }
+
+    /* 中部 */
+    section.result {
+      overflow-x : hidden;
+      overflow-y : scroll;
+      max-height : calc(100vh - 86px);
+      padding    : 10px 0 20px 0;
+      flex       : 1;
+
+      .fetch-button {
+      }
+
+      .down-button {
+        display : none; // 默认不显示
+      }
+
+      .result {
+        display    : none;
+        margin-top : 20px;
+        width      : 100%;
+        height     : 180px;
+        // background-color : purple;
+        overflow   : hidden;
+      }
+
+      .resultImage {
+        --image-size          : 120px;
+        --image-per-row       : 4;
+        @include media.fit('sidePanel') {
+          --image-size    : 100%;
+          --image-per-row : 1;
+        }
+        border-radius         : 8px;
+        width                 : 100%;
+        min-height            : 100px;
+        padding               : 0 10px;
+        display               : grid;
+        row-gap               : 10px;
+        grid-template-columns : repeat(var(--image-per-row), 1fr);
+        justify-items         : center;
+
+        .cell {
+          position         : relative;
+          width            : var(--image-size);
+          height           : var(--image-size);
+          overflow         : hidden;
+          padding          : 0 4px;
+          border-radius    : 8px;
+          background-color : #3c3c3c;
+
+          .cell-header {
+            display         : flex;
+            justify-content : space-between;
+            align-items     : center;
+            padding         : 10px 10px;
+
+            .button-list {
+              display    : flex;
+              column-gap : 8px;
+
+              .checkbox-button-link {
+                // 默认不显示
+                display : none;
+                height  : 100%;
+
+                // 禁用点击事件
+                iconpark-icon {
+                  pointer-events : none;
+                }
+              }
+            }
+
+            .info-list {
+              display         : flex;
+              justify-content : space-between;
+              column-gap      : 4px;
+              pointer-events  : none;
+
+              .item {
+                padding          : 4px 4px;
+                background-color : #282828;
+                border-radius    : 4px;
+                color            : #ebebeb;
+                font-size        : 12px;
+              }
+            }
+          }
+
+          .cell-footer {
+            display         : flex;
+            justify-content : space-between;
+            padding         : 10px 10px;
+            pointer-events  : none; // 禁止点击
+
+            .text {
+              text-wrap     : nowrap;
+              overflow      : hidden;
+              text-overflow : ellipsis;
+            }
+          }
+
+          .img-container {
+            width          : 100%;
+            pointer-events : none; // 禁止点击
+
+            img {
+              width : 100%;
+            }
+          }
+
+          // 外边框
+          .border {
+            display        : none;
+            position       : absolute;
+            left           : 0;
+            top            : 0;
+            width          : 100%;
+            height         : 100%;
+            z-index        : 10;
+            border         : 3px solid #ebebeb;
+            border-radius  : 8px;
+            box-sizing     : border-box;
+            pointer-events : none; // 不支持点击
+          }
+
+          // 隐藏状态
+          &.exclude {
+            display : none;
+          }
+
+          // 选中状态
+          &.selected {
+            .border {
+              display : initial; // 显示边框
+            }
+
+            .cell-header {
+              .button-list {
+                .checkbox-button-link {
+                  display : inline; // 显示按钮
+                }
+              }
+            }
+          }
+
+          // 悬停状态
+          &:hover {
+            .cell-header {
+              .button-list {
+                .checkbox-button-link {
+                  display : inline; // 显示按钮
+                }
+              }
+            }
+          }
+        }
+      }
+
+      /* 添加滚动条样式覆盖 */
+      &::-webkit-scrollbar {
+        width : 8px; // 固定滚动条宽度
+      }
+
+      &::-webkit-scrollbar-track {
+        // background : #f1f1f1; // 滚动条轨道背景
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background    : #884a68; // 滑块颜色
+        border-radius : 4px;
+        border        : 1px solid #122436; // 内边距效果
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background : #dd77a8; // 鼠标悬停时颜色
+      }
+    }
+
+    .top-button {
+      position              : absolute;
+      right                 : calc(50% - 16px);
+      bottom                : 4px;
+      z-index               : 20;
+      width                 : 28px;
+      height                : 28px;
+      border                : none;
+      border-radius         : 12px;
+      background-color      : rgba(255, 255, 255, .3);
+      background-blend-mode : difference;
+      display               : flex;
+      justify-content       : center;
+      align-items           : center;
+
+      &:hover {
+        background-color : rgba(0, 0, 0, .7);
+        border           : 1px solid rgba(255, 255, 255, .7);
+      }
+    }
+  }
+}
