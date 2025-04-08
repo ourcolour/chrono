@@ -49,7 +49,7 @@ body:has(#app) {
 }
 #app input,
 #app textarea {
-  height: 32px;
+  /* height: 32px; */
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #ccc;

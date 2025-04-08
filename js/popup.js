@@ -7,6 +7,16 @@
 // --------------------
 const DEFAULT_VERSION = '0.0.1'
 const FORMAT_LIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', /* 'svg', */];
+const CONFIG = {
+    // 实时数据获取
+    realtimeFetching: true, // 过滤条件
+    filter          : {
+        sizeType: null,
+        format  : null,
+        layout  : null,
+        url     : null,
+    }, //
+}
 
 /**
  * 从HTML中提取图片
@@ -173,8 +183,8 @@ const filterData = (filter) => {
     };
 
     // size
-    if (filter.sizeType && 0 < filter.sizeType.length) {
-        _excludeCell(`.cell:not([data-sizeType="${filter.sizeType}"])`);
+    if (filter.size && 0 < filter.size.length) {
+        _excludeCell(`.cell:not([data-sizeType="${filter.size}"])`);
     }
     // format
     if (filter.format && 0 < filter.format.length) {
@@ -188,6 +198,87 @@ const filterData = (filter) => {
     if (filter.url && 0 < filter.url.length) {
         _excludeCell(`.cell:not([data-fullUrl*="${filter.url}"])`);
     }
+
+    // 更新选中数量
+    updateSelectedCount();
+
+    // 排序
+    sortCellByAttribute();
+}
+
+/**
+ * 是否监控页面
+ */
+const getIsMonitoringPage = () => {
+    // Nodes
+    const $monitorPage = document.querySelector('.monitor-page label input[type="checkbox"]');
+    return $monitorPage.checked;
+}
+
+/**
+ * 切换加载状态
+ */
+const toggleLoadingDisplayStatus = (toShow) => {
+    // Nodes
+    const $loading = document.querySelector('.loading');
+
+    // Args
+    if ('undefined' === typeof toShow) {
+        toShow = 'none' === $loading.style.display;
+    }
+
+    // 切换显示状态
+    $loading.style.display = toShow ? 'flex' : 'none';
+
+    return toShow;
+}
+
+/**
+ * 更新总数
+ * @param value
+ */
+const updateTotalCount = (value) => {
+    // Args
+    if ('undefined' === typeof value) {
+        // 从DOM中获取
+        value = document.querySelectorAll('.resultImage .cell').length;
+    }
+
+    // Nodes
+    const $totalCountList = document.querySelectorAll('.total-count');
+
+    // 更新计数
+    $totalCountList.forEach(($totalCount) => {
+        $totalCount.innerHTML = value;
+    });
+}
+
+/**
+ * 更新已选中数量
+ * @returns {Element}
+ */
+const updateSelectedCount = (value) => {
+    // Nodes
+    const $resultImage = document.querySelector('.resultImage');
+    const $selectedCount = document.querySelector('.selected-count');
+    const $downButton = document.querySelector('.down-button');
+
+    // 选中数量
+    if (!value) {
+        value = $resultImage.querySelectorAll('.selected').length
+    }
+
+    // 更新选中数量
+    $selectedCount.innerHTML = `${value}`;
+
+    // 更新下载按钮状态
+    if (0 < value) {
+        $downButton.style.display = 'inline-block';
+    } else {
+        $downButton.style.display = 'none';
+    }
+
+    return value;
 }
 
 /**
@@ -203,9 +294,17 @@ const fetchData = () => {
             target: {tabId: tabs[0].id},
             func  : () => document.documentElement.outerHTML,
         }, async (data) => {
+            // 忽略空数据
+            if (!data || 1 > data.length || !data[0].result) {
+                return;
+            }
+
             /* 处理数据 */
             // 原始html
             const html = data[0].result;
+
+            // 显示加载状态
+            toggleLoadingDisplayStatus(true);
 
             // 从HTML中提取图片
             const imageInfoList = await extractData(html);
@@ -221,6 +320,11 @@ const newImage = async (fullUrl) => {
         try {
             // 通过fetch获取图片
             const response = await fetch(fullUrl);
+            // 判断是否正确加载
+            if (!response.ok) {
+                return reject(response);
+            }
+
             // 读取文件大小
             const contentLength = response.headers.get('content-length');
 
@@ -246,51 +350,52 @@ const newImage = async (fullUrl) => {
                 reject(evt);
             };
         } catch (e) {
-            console.error(`Load img failed: ${e}`);
+            console.info(`Load img failed: ${e}`);
         }
     });
 }
 
-const newImageCell = async (imageObj, debug) => {
+const newCell = async (imageObj, debug) => {
     // Args
     if (debug) {
-        console.time(`newImageCell(${imageObj.fileName})`);
+        console.time(`newCell(${imageObj.fileName})`);
     }
 
-    // 生成图片
-    const res = await newImage(imageObj.fullUrl);
-    const $img = res.$img;
-    const fileSize = res.contentLength;
+    try {
+        // 生成图片
+        const res = await newImage(imageObj.fullUrl);
+        const $img = res.$img;
+        const fileSize = res.contentLength;
 
-    /* 更新图片信息 */
-    // 图片尺寸
-    imageObj.width = $img.naturalWidth;
-    imageObj.height = $img.naturalHeight;
-    imageObj.pixelCount = $img.naturalWidth * $img.naturalHeight;
-    imageObj.sizeType = 'small';
-    if (200 * 200 > imageObj.pixelCount) {
+        /* 更新图片信息 */
+        // 图片尺寸
+        imageObj.width = $img.naturalWidth;
+        imageObj.height = $img.naturalHeight;
+        imageObj.pixelCount = $img.naturalWidth * $img.naturalHeight;
         imageObj.sizeType = 'small';
-    }
-    if (200 * 200 <= imageObj.pixelCount) {
-        imageObj.sizeType = 'medium';
-    }
-    if (800 * 600 <= imageObj.pixelCount) {
-        imageObj.sizeType = 'large';
-    }
-    // 图片比例
-    if (imageObj.width >= (imageObj.height * 1.2)) {
-        imageObj.layout = 'wide';
-    } else if (imageObj.height >= (imageObj.width * 1.2)) {
-        imageObj.layout = 'tall';
-    } else {
-        imageObj.layout = 'square';
-    }
-    // 文件大小
-    imageObj.fileSize = fileSize;
-    imageObj.formatedFileSize = formatBytes(fileSize, 0);
+        if (200 * 200 > imageObj.pixelCount) {
+            imageObj.sizeType = 'small';
+        }
+        if (200 * 200 <= imageObj.pixelCount) {
+            imageObj.sizeType = 'medium';
+        }
+        if (800 * 600 <= imageObj.pixelCount) {
+            imageObj.sizeType = 'large';
+        }
+        // 图片比例
+        if (imageObj.width >= (imageObj.height * 1.2)) {
+            imageObj.layout = 'wide';
+        } else if (imageObj.height >= (imageObj.width * 1.2)) {
+            imageObj.layout = 'tall';
+        } else {
+            imageObj.layout = 'square';
+        }
+        // 文件大小
+        imageObj.fileSize = fileSize;
+        imageObj.formatedFileSize = formatBytes(fileSize, 0);
 
-    // 内容模板
-    const html = `<div class="cell"
+        // 内容模板
+        const html = `<div class="cell"
             data-index="${imageObj.index}" 
             data-url="${imageObj.url}" 
             data-fullUrl="${imageObj.fullUrl}"
@@ -324,7 +429,7 @@ const newImageCell = async (imageObj, debug) => {
                 <span class="item img-format">${imageObj.fileExt.toUpperCase()}</span>
                 <span class="item img-size">${imageObj.width}x${imageObj.height}</span>
                 <span class="item img-file-size">${imageObj.formatedFileSize}</span>
-<!--                <span class="item img-index">${imageObj.index}</span>-->
+                <!--<span class="item img-index">${imageObj.index}</span>-->
 <!--                <span class="item img-index">${imageObj.layout}</span>-->
 <!--                <span class="item img-index">${imageObj.sizeType}</span>-->
             </div>
@@ -338,19 +443,35 @@ const newImageCell = async (imageObj, debug) => {
     </div>
     `;
 
-    // 创建临时元素
-    const $tempDiv = document.createElement('div');
-    $tempDiv.innerHTML = html;
+        // 创建临时元素
+        const $tempDiv = document.createElement('div');
+        $tempDiv.innerHTML = html;
 
-    // 添加图片到 .img-container
-    const $imgContainer = $tempDiv.querySelector('.img-container');
-    $imgContainer.appendChild($img);
+        // 添加图片到 .img-container
+        const $imgContainer = $tempDiv.querySelector('.img-container');
+        $imgContainer.appendChild($img);
 
-    if (debug) {
-        console.timeEnd(`newImageCell(${imageObj.fileName})`);
+        if (debug) {
+            console.timeEnd(`newCell(${imageObj.fileName})`);
+        }
+
+        return $tempDiv.firstChild;
+    } catch (e) {
+        const res = await e;
+        console.info(res);
     }
+}
 
-    return $tempDiv.firstChild;
+/**
+ * 清空原有内容
+ */
+const clearImageList = () => {
+    // Nodes
+    const $resultImage = document.querySelector('.resultImage');
+    // 清空内容
+    $resultImage.innerHTML = '';
+    // 更新总数
+    updateTotalCount(0);
 }
 
 /**
@@ -381,34 +502,32 @@ const addImageList = async (imageInfoList) => {
 
     // Nodes
     const $resultImage = document.querySelector('.resultImage');
-    const $downButton = document.querySelector('.down-button');
-    const $totalCount = document.querySelector('.total-count');
-    const $selectedCount = document.querySelector('.selected-count');
 
     // 清空原有内容
-    $resultImage.innerHTML = '';
-    // 隐藏下载按钮状态
-    $downButton.style.display = 'none';
+    clearImageList();
     // 更新选中数量
-    $selectedCount.innerHTML = $resultImage.querySelectorAll('.selected').length.toString();
+    updateSelectedCount(0);
 
     // 遍历每一个图片信息
     console.time('解析预览图');
     let count = 0;
     Promise.all(imageInfoList.map(async (info, index) => {
         // 构建 cell
-        const $cell = await newImageCell(info);
-        // 添加到dom
-        $resultImage.appendChild($cell);
-        // 更新计数
-        $totalCount.innerHTML = ++count;
-        // 更新下载按钮状态
-        if (0 < parseInt($totalCount.innerHTML)) {
-            $downButton.style.display = 'inline-block';
+        const $cell = await newCell(info);
+        if ($cell) {
+            // 添加到dom
+            $resultImage.appendChild($cell);
+            // 总数加一
+            count++;
+            // 更新总数
+            updateTotalCount(count);
         }
     })).then(() => {
-        /* 过滤数据 */
+        // 过滤数据
         filterData();
+    }).finally(() => {
+        // 隐藏加载状态
+        toggleLoadingDisplayStatus(false);
     });
     console.timeEnd('解析预览图');
 
@@ -436,32 +555,108 @@ const newFilter = (size, format, layout, url) => {
 }
 
 /**
+ * 排序cell
+ * @param attrName
+ * @param isAsc
+ */
+const sortCellByAttribute = (attrName, isAsc) => {
+    // Args
+    if (!attrName) {
+        attrName = 'index';
+    }
+    // 数字格式的属性
+    const numberAttributeList = ['index', 'pixelCount', 'fileSize',];
+    // 是否数字属性
+    let isNum = 0 < numberAttributeList.find((attr) => {
+        return attrName === attr
+    }).length;
+    // 升序/降序
+    if (!isAsc) {
+        isAsc = true;
+    }
+
+    // Nodes
+    const $resultImage = document.querySelector('.resultImage');
+    const $cellList = $resultImage.querySelectorAll(`.cell`);
+    if (!$cellList || 1 > $cellList.length) {
+        return;
+    }
+
+    // 转换为数组并排序
+    const sortedCellList = Array.from($cellList)
+        .sort((c1, c2) => {
+            const attr1 = c1.dataset[attrName];
+            const attr2 = c2.dataset[attrName];
+
+            // 数字格式
+            if (isNum) {
+                // 升序
+                if (isAsc) {
+                    return parseInt(attr1) - parseInt(attr2);
+                }
+                // 降序
+                return parseInt(attr2) - parseInt(attr1);
+            }
+            // 其他格式
+            else {
+                // 升序
+                if (isAsc) {
+                    return attr1.localeCompare(attr2);
+                }
+                // 降序
+                return attr2.localeCompare(attr1);
+            }
+        });
+
+    // 讲元素移动到末尾，保持顺序
+    sortedCellList.forEach($cell => {
+        $resultImage.appendChild($cell);
+    });
+}
+
+/**
+ * 清除所有cell选中状态
+ */
+const clearCellSelectedStatus = () => {
+    // Nodes
+    const $resultImage = document.querySelector('.resultImage');
+    const $cellList = $resultImage.querySelectorAll('.cell.selected');
+
+    // 遍历所有并重置选中状态
+    for (const $cell of $cellList) {
+        toggleCellSelectedStatus($cell, false);
+    }
+}
+
+/**
  * 更改cell选中状态
  */
-const toggleCellSelectedStatus = ($cell) => {
+const toggleCellSelectedStatus = ($cell, toSelect) => {
     if (!$cell) {
         return;
     }
 
     // Nodes
     const $icon = $cell.querySelector('.cell .checkbox-button-link.select iconpark-icon');
-    const $resultImage = $icon.closest('.resultImage');
-    const $selectedCount = document.querySelector('.selected-count');
 
-    // 切换选中状态
-    const isSelected = $cell.classList.contains('selected');
+    // 切换选中状态（目标状态）
+    if ('undefined' === typeof toSelect) {
+        toSelect = !$cell.classList.contains('selected');
+    }
 
-    // 已经选中
-    if (isSelected) {
-        $cell.classList.remove('selected');
-        $icon.name = 'square';
-    } else {
+    // 目标:选中
+    if (toSelect) {
         $cell.classList.add('selected');
         $icon.name = 'check-correct';
     }
+    // 目标:取消选中
+    else {
+        $cell.classList.remove('selected');
+        $icon.name = 'square';
+    }
 
     // 更新选中数量
-    $selectedCount.innerHTML = $resultImage.querySelectorAll('.selected').length;
+    updateSelectedCount();
 }
 
 /**
@@ -530,6 +725,34 @@ const download = async (url, saveAsName) => {
 // --------------------
 (() => {
     /**
+     * 注册页面更新监听器
+     */
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        console.log(`收到消息: ${message.type} Sender: ${sender} Response: ${sendResponse}`);
+
+        // 是否监听页面
+        const isMonitoringPage = getIsMonitoringPage();
+        if (!isMonitoringPage) {
+            return;
+        }
+
+        // 更新数据
+        if ('tabActivated' === message.type) {
+            // 清空图片列表
+            clearImageList();
+            // 重新获取数据
+            fetchData();
+        } else if ('pageLoading' === message.type) {
+            // 清空图片列表
+            clearImageList();
+            // 重新获取数据
+            fetchData();
+        } else if ('pageUpdated' === message.type) {
+        } else {
+            console.log(`检测到未监听动作：${message.type}`);
+        }
+    });
+    /**
      * 注册refresh-button
      */
     document.querySelector('.refresh-button')?.addEventListener('click', evt => {
@@ -592,8 +815,10 @@ const download = async (url, saveAsName) => {
         // select
         if ('select' === tagName) {
             $item.addEventListener('change', (evt) => {
+                // 清除所有cell选中状态
+                clearCellSelectedStatus();
                 // 过滤数据
-                filterData(newFilter());
+                filterData();
 
                 console.log(`Filter: ${evt.currentTarget.name}=${evt.currentTarget.value}`)
             });
@@ -603,8 +828,10 @@ const download = async (url, saveAsName) => {
             $item.addEventListener('keypress', (evt) => {
                 // 监听回车
                 if (13 === evt.keyCode) {
+                    // 清除所有cell选中状态
+                    clearCellSelectedStatus();
                     // 过滤数据
-                    filterData(newFilter());
+                    filterData();
                     // 阻止默认事件
                     evt.preventDefault();
                 }

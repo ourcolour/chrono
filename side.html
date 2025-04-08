@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Image Fetcher</title>
+    <title>瞬捕·Chrono</title>
     <!--    <link rel="stylesheet" href="assets/css/all.css">-->
     <script defer src="js/iconpark.js"></script>
     <link rel="stylesheet" href="css/common.css">
@@ -10,6 +10,13 @@
 </head>
 <body>
 <div id="app">
+    <!-- loading 遮罩 -->
+    <div class="loading">
+        <div class="text">
+            Fetched <span class="total-count">0</span> image(s) in this page ...
+        </div>
+    </div>
+
     <div class="container">
         <section class="top">
             <div class="banner">
@@ -22,9 +29,12 @@
                         <iconpark-icon name="download-one" size="12" color="#ebebeb"></iconpark-icon>
                         下载 (<span class="selected-count">0</span>)
                     </button>
+                    <div class="monitor-page">
+                        <label><input type="checkbox" name="realtimeFetching" value="1">监控页面</label>
+                    </div>
                 </div>
                 <div class="text">
-                    发现 <span class="total-count">0</span> 张图片
+                    发现 <span class="total-count">0</span> 张
                 </div>
             </div>
             <div class="row filter-list">
@@ -71,21 +81,52 @@
         <section class="result">
             <div class="row">
                 <div class="resultImage">
-                    <!--                <div class="cell">-->
-                    <!--                    <div class="cell-header">-->
-                    <!--                        <div class="button-list">-->
-                    <!--                <iconpark-icon name="square" size="16" color="#ebebeb"></iconpark-icon>-->
-                    <!--                <iconpark-icon name="share" size="16" color="#ebebeb"></iconpark-icon>-->
-                    <!--                <iconpark-icon name="zoom-in" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                    <div class="cell"-->
+                    <!--                         data-index="${imageObj.index}"-->
+                    <!--                         data-url="${imageObj.url}"-->
+                    <!--                         data-fullUrl="${imageObj.fullUrl}"-->
+                    <!--                         data-fileName="${imageObj.fileName}"-->
+                    <!--                         data-fileExt="${imageObj.fileExt}"-->
+                    <!--                         data-format="${imageObj.fileExt}"-->
+                    <!--                         data-width="${imageObj.width}"-->
+                    <!--                         data-height="${imageObj.height}"-->
+                    <!--                         data-pixelCount="${imageObj.pixelCount}"-->
+                    <!--                         data-sizeType="${imageObj.sizeType}"-->
+                    <!--                         data-layout="${imageObj.layout}"-->
+                    <!--                         data-fileSize="${imageObj.fileSize}"-->
+                    <!--                         data-formatFileSize="${imageObj.formatedFileSize}">-->
+                    <!--                        <div class="border"></div>-->
+                    <!--                        <div class="cell-header">-->
+                    <!--                            <div class="button-list">-->
+                    <!--                                <a class="checkbox-button-link select" href="#">-->
+                    <!--                                    <iconpark-icon name="square" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                                </a>-->
+                    <!--                                <a class="checkbox-button-link share" href="${imageObj.fullUrl}" target="_blank">-->
+                    <!--                                    <iconpark-icon name="share" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                                </a>-->
+                    <!--                                <a class="checkbox-button-link download" href="#">-->
+                    <!--                                    <iconpark-icon name="download-one" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                                </a>-->
+                    <!--                                <a class="checkbox-button-link zoom" href="https://www.baidu.com/s?wd=${imageObj.fileName}" target="_blank">-->
+                    <!--                                    <iconpark-icon name="zoom-in" size="16" color="#ebebeb"></iconpark-icon>-->
+                    <!--                                </a>-->
+                    <!--                            </div>-->
+                    <!--                            <div class="info-list">-->
+                    <!--                                <span class="item img-format">${imageObj.fileExt.toUpperCase()}</span>-->
+                    <!--                                <span class="item img-size">${imageObj.width}x${imageObj.height}</span>-->
+                    <!--                                <span class="item img-file-size">${imageObj.formatedFileSize}</span>-->
+                    <!--                                &lt;!&ndash;<span class="item img-index">${imageObj.index}</span>&ndash;&gt;-->
+                    <!--                                &lt;!&ndash;                <span class="item img-index">${imageObj.layout}</span>&ndash;&gt;-->
+                    <!--                                &lt;!&ndash;                <span class="item img-index">${imageObj.sizeType}</span>&ndash;&gt;-->
+                    <!--                            </div>-->
                     <!--                        </div>-->
-                    <!--                        <div class="info-list">-->
-                    <!--                            <span class="item">JPG</span>-->
-                    <!--                            <span class="item">200x150</span>-->
-                    <!--                top-button            <span class="item">123 B</span>-->
+                    <!--                        <div class="img-container">-->
+                    <!--                            &lt;!&ndash;            <img class="img">&ndash;&gt;-->
+                    <!--                        </div>-->
+                    <!--                        <div class="cell-footer">-->
+                    <!--                            <span class="text">${imageObj.fileName}</span>-->
                     <!--                        </div>-->
                     <!--                    </div>-->
-                    <!--                    <img src="https://piccdn.jbk010.cc/digital/video/h_1293zrk00001/h_1293zrk00001pl.jpg" alt="https://piccdn.jbk010.cc/digital/video/h_1293zrk00001/h_1293zrk00001pl.jpg">-->
-                    <!--                </div>-->
                 </div>
                 <div class="result"></div>
             </div>

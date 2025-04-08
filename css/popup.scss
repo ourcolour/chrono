@@ -4,6 +4,21 @@
 @use './media.scss';
 
 #app {
+  /* loading 遮罩 */
+  .loading {
+    display         : none; // 默认隐藏
+    position        : absolute;
+    width           : 100vw;
+    height          : 100vh;
+    left            : 0;
+    right           : 0;
+    z-index         : 99;
+    background      : rgba(0, 0, 0, 0.7);
+    display         : flex;
+    justify-content : center;
+    align-items     : center;
+  }
+
   /* 添加间距和边框的通用容器类 */
   .container {
     position       : relative;
@@ -32,6 +47,24 @@
         .text {
           text-wrap : nowrap;
           color     : #999;
+        }
+
+        .button-list {
+          display     : flex;
+          align-items : center;
+          column-gap  : 8px;
+
+          .fetch-button {
+          }
+
+          .down-button {
+            display : none; // 默认不显示
+          }
+
+          .monitor-page {
+            display     : inline-flex;
+            align-items : center;
+          }
         }
       }
 
@@ -86,13 +119,6 @@
       padding    : 10px 0 20px 0;
       flex       : 1;
 
-      .fetch-button {
-      }
-
-      .down-button {
-        display : none; // 默认不显示
-      }
-
       .result {
         display    : none;
         margin-top : 20px;
@@ -103,12 +129,12 @@
       }
 
       .resultImage {
-        --image-size          : 120px;
-        --image-per-row       : 4;
-        @include media.fit('sidePanel') {
-          --image-size    : 100%;
-          --image-per-row : 1;
-        }
+        // --image-size          : 50%;
+        // --image-per-row       : 2;
+        // @include media.fit('sidePanel') {
+        --image-size          : 100%;
+        --image-per-row       : 1;
+        // }
         border-radius         : 8px;
         width                 : 100%;
         min-height            : 100px;
@@ -135,6 +161,9 @@
 
             .button-list {
               display    : flex;
+              flex-wrap  : nowrap;
+              overflow-y : hidden;
+              overflow-x : scroll;
               column-gap : 8px;
 
               .checkbox-button-link {

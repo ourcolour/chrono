@@ -83,4 +83,43 @@ const download = async (url, saveAsName) => {
      * 注册打开侧边栏
      */
     chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true});
+
+    /**
+     * 监听页面更新事件
+     */
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        console.log(`页面更新: ${changeInfo.status} ${tabId} ${JSON.stringify(changeInfo)}`);
+        if ('loading' === changeInfo.status) {
+            // 页面加载完成，通知 popup.js 重新获取数据
+            chrome.runtime.sendMessage({
+                type : 'pageLoading',
+                tabId: tabId,
+                url  : tab.url,
+            });
+        } else if ('complete' === changeInfo.status) {
+            // 页面加载完成，通知 popup.js 重新获取数据
+            chrome.runtime.sendMessage({
+                type : 'pageUpdated',
+                tabId: tabId,
+                url  : tab.url,
+            });
+        }
+    });
+    /**
+     * 监听tab切换事件
+     */
+    chrome.tabs.onActivated.addListener((activeInfo) => {
+        // 获取当前激活标签页的 ID
+        const tabId = activeInfo.tabId;
+
+        // 获取当前 tab 信息
+        chrome.tabs.get(tabId, function (tab) {
+            // 页面激活，通知 popup.js 重新获取数据
+            chrome.runtime.sendMessage({
+                type : 'tabActivated',
+                tabId: tabId,
+                url  : tab.url,
+            });
+        });
+    });
 })();

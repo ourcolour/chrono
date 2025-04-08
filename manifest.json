@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Image Fetcher",
+  "name": "瞬捕·Chrono",
   "version": "1.0",
   "description": "A Chrome extension for fetching images",
   "icons": {
