@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/image-fetcher.iml" filepath="$PROJECT_DIR$/.idea/image-fetcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/chrono.iml" filepath="$PROJECT_DIR$/.idea/chrono.iml" />
     </modules>
   </component>
 </project>
