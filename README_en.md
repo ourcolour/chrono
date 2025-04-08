@@ -1,7 +1,7 @@
 [中文](README.md) [EN](README_en.md)
 
 # 瞬捕 · Chrono
-A image quickly capturing plugin for Google Chrome.
+An image quickly capturing plugin for Google Chrome.
 
 ## Features
 - **One-Click Refresh**: Real-time acquisition of all image resources on the current page
