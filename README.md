@@ -1,3 +1,5 @@
+[中文](README.md) [EN](README_en.md)
+
 # 瞬捕 · Chrono
 一个用于快速捕获网页图片的Google Chrome浏览器插件。
 
