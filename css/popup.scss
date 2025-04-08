@@ -64,6 +64,11 @@
           .monitor-page {
             display     : inline-flex;
             align-items : center;
+
+            label input {
+              inset  : 0;
+              height : auto;
+            }
           }
         }
       }

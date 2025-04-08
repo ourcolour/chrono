@@ -60,6 +60,10 @@
   display: inline-flex;
   align-items: center;
 }
+#app .container section.top .banner .button-list .monitor-page label input {
+  inset: 0;
+  height: auto;
+}
 #app .container section.top .filter-list {
   display: flex;
   flex-direction: row;
