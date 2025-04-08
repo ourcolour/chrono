@@ -13,36 +13,39 @@ const ALBUM_REGEX = /^(?<name>[a-zA-Z]+)(?<no>\d+)p[ls]\.jpg$/gi;
  * @param saveAsName
  */
 const download = async (url, saveAsName) => {
-    // 指定输出文件名
-    let fileName = saveAsName;
-    // 尝试从 url 中获取
-    if (null === fileName || 1 > fileName.length) {
-        fileName = url.split('/').pop();
-    }
-    // 处理车牌
-    if (ALBUM_REGEX.test(fileName)) {
-        const matched1 = fileName.match(ALBUM_REGEX);
-        const matched = ALBUM_REGEX.exec(fileName);
-        if (matched) {
-            const series = matched.groups.name.toUpperCase()
-            let no = matched.groups.no.substring(3);
-            // 对no左侧补齐3个0
-            while (no.length < 3) {
-                no = `0${no}`;
-            }
-            fileName = `${series}-${no}`;
+    try { // 指定输出文件名
+        let fileName = saveAsName;
+        // 尝试从 url 中获取
+        if (null === fileName || 1 > fileName.length) {
+            fileName = url.split('/').pop();
         }
-    }
+        // 处理车牌
+        if (ALBUM_REGEX.test(fileName)) {
+            const matched1 = fileName.match(ALBUM_REGEX);
+            const matched = ALBUM_REGEX.exec(fileName);
+            if (matched) {
+                const series = matched.groups.name.toUpperCase()
+                let no = matched.groups.no.substring(3);
+                // 对no左侧补齐3个0
+                while (no.length < 3) {
+                    no = `0${no}`;
+                }
+                fileName = `${series}-${no}`;
+            }
+        }
 
-    // 下载
-    return await chrome.downloads.download({
-        url           : url,
-        saveAs        : false,
-        conflictAction: 'uniquify',
-        filename      : fileName,
-    }, (downloadId) => {
-        console.log(`成功下载: ${downloadId}`)
-    });
+        // 下载
+        return await chrome.downloads.download({
+            url           : url,
+            saveAs        : false,
+            conflictAction: 'overwrite',
+            filename      : fileName,
+        }, (downloadId) => {
+            console.log(`成功下载: ${downloadId}`)
+        });
+    } catch (e) {
+        console.info(e);
+    }
 };
 
 // --------------------
