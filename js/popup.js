@@ -300,17 +300,20 @@ const fetchData = () => {
             }
 
             /* 处理数据 */
-            // 原始html
-            const html = data[0].result;
+            try { // 原始html
+                const html = data[0].result;
 
-            // 显示加载状态
-            toggleLoadingDisplayStatus(true);
+                // 显示加载状态
+                toggleLoadingDisplayStatus(true);
 
-            // 从HTML中提取图片
-            const imageInfoList = await extractData(html);
+                // 从HTML中提取图片
+                const imageInfoList = await extractData(html);
 
-            // 添加图片到dom
-            addImageList(imageInfoList);
+                // 添加图片到dom
+                addImageList(imageInfoList);
+            } catch (e) {
+                console.info(e);
+            }
         });
     });
 }
@@ -493,11 +496,9 @@ const clearImageList = () => {
  *     };
  */
 const addImageList = async (imageInfoList) => {
-    const result = [];
-
     // Args
     if (!imageInfoList || 1 > imageInfoList.length) {
-        return result;
+        return;
     }
 
     // Nodes
@@ -511,7 +512,7 @@ const addImageList = async (imageInfoList) => {
     // 遍历每一个图片信息
     console.time('解析预览图');
     let count = 0;
-    Promise.all(imageInfoList.map(async (info, index) => {
+    return Promise.all(imageInfoList.map(async (info, index) => {
         // 构建 cell
         const $cell = await newCell(info);
         if ($cell) {
@@ -528,10 +529,8 @@ const addImageList = async (imageInfoList) => {
     }).finally(() => {
         // 隐藏加载状态
         toggleLoadingDisplayStatus(false);
+        console.timeEnd('解析预览图');
     });
-    console.timeEnd('解析预览图');
-
-    return result;
 }
 
 /**
