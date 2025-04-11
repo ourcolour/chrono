@@ -6,15 +6,12 @@
 // Functions
 // --------------------
 const DEFAULT_VERSION = '0.0.1'
-const FORMAT_LIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', /* 'svg', */];
-const CONFIG = {
+const FORMAT_LIST     = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', /* 'svg', */];
+const CONFIG          = {
     // 实时数据获取
     realtimeFetching: true, // 过滤条件
     filter          : {
-        sizeType: null,
-        format  : null,
-        layout  : null,
-        url     : null,
+        sizeType: null, format: null, layout: null, url: null,
     }, //
 }
 
@@ -25,7 +22,7 @@ const CONFIG = {
  */
 const extractData = async (html) => {
     // 从html中提取链接
-    const regex = /['"](?<url>(?:https?:\/)\/?[^'"]+)['"]/gi;
+    const regex     = /['"](?<url>(?:https?:\/)\/?[^'"]+)['"]/gi;
     const matchList = html.matchAll(regex);
 
     // 结果
@@ -56,12 +53,7 @@ const extractData = async (html) => {
 
         // 构建图片对象
         const imageObj = {
-            index   : index,
-            url     : url,
-            fullUrl : fullUrl,
-            fileName: fileNameAndExtension.fileName,
-            fileExt : fileNameAndExtension.fileExt,
-            format  : fileNameAndExtension.fileExt?.toUpperCase(), // fileSize        : fileSize,
+            index: index, url: url, fullUrl: fullUrl, fileName: fileNameAndExtension.fileName, fileExt: fileNameAndExtension.fileExt, format: fileNameAndExtension.fileExt?.toUpperCase(), // fileSize        : fileSize,
             // formatedFileSize: formatBytes(fileSize, 2),
             // width           : imgSize.width,
             // height          : imgSize.height,
@@ -80,10 +72,10 @@ const extractData = async (html) => {
 
 const formatBytes = (bytes, decimals) => {
     if (0 === bytes) return '0 B';
-    const k = 1024;
-    const dm = decimals;
+    const k     = 1024;
+    const dm    = decimals;
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i     = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
@@ -94,7 +86,7 @@ const formatBytes = (bytes, decimals) => {
  */
 const getFullUrl = (url) => {
     // 获取当前主机头
-    const host = window.location.origin;
+    const host     = window.location.origin;
     const protocol = window.location.protocol;
 
     // 如果 ‘//’ 开头，补全 url 地址
@@ -119,15 +111,14 @@ const getFileNameAndExtension = (url) => {
     // 从url中提取文件名
     const fileName = url.split('/').pop();
     // 提取扩展名
-    let fileExt = fileName.split('.').pop().toLowerCase();
+    let fileExt    = fileName.split('.').pop().toLowerCase();
     // 单独处理 jpeg 后缀名
     if ('jpeg' === fileExt) {
         fileExt = 'jpg';
     }
 
     return {
-        fileName: fileName,
-        fileExt : fileExt,
+        fileName: fileName, fileExt: fileExt,
     };
 }
 
@@ -166,7 +157,7 @@ const filterData = (filter) => {
     }
 
     // Nodes
-    const $resultImage = document.querySelector('.resultImage');
+    const $resultImage     = document.querySelector('.resultImage');
     const $excludeCellList = $resultImage.querySelectorAll('.exclude');
 
     // 清除所有排除项目 .exclude
@@ -204,6 +195,21 @@ const filterData = (filter) => {
 
     // 排序
     sortCellByAttribute();
+}
+
+/**
+ * 切换显示状态
+ */
+const toggleSelectButton = () => {
+    // Nodes
+    const $selectAllButton   = document.querySelector('.select-all');
+    const $unselectAllButton = document.querySelector('.unselect-all');
+    const $cellList          = document.querySelectorAll('.resultImage .cell');
+
+    // 当前 .cell 数量
+    const cellCount = $cellList.length;
+
+    // 切换显示状态
 }
 
 /**
@@ -259,9 +265,9 @@ const updateTotalCount = (value) => {
  */
 const updateSelectedCount = (value) => {
     // Nodes
-    const $resultImage = document.querySelector('.resultImage');
+    const $resultImage   = document.querySelector('.resultImage');
     const $selectedCount = document.querySelector('.selected-count');
-    const $downButton = document.querySelector('.down-button');
+    const $downButton    = document.querySelector('.down-button');
 
     // 选中数量
     if (!value) {
@@ -287,12 +293,10 @@ const updateSelectedCount = (value) => {
 const fetchData = () => {
     // Call
     chrome.tabs.query({
-        active       : true,
-        currentWindow: true
+        active: true, currentWindow: true
     }, (tabs) => {
         chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id},
-            func  : () => document.documentElement.outerHTML,
+            target: {tabId: tabs[0].id}, func: () => document.documentElement.outerHTML,
         }, async (data) => {
             // 忽略空数据
             if (!data || 1 > data.length || !data[0].result) {
@@ -312,17 +316,48 @@ const fetchData = () => {
                 // 添加图片到dom
                 addImageList(imageInfoList);
             } catch (e) {
-                console.info(e);
+                console.log(e);
             }
         });
     });
+}
+
+/**
+ * 带超时的fetch函数
+ * @param url
+ * @param timeout
+ * @returns {Promise<Response>}
+ * @desc:
+ * // 使用示例
+ * fetchWithTimeout('https://api.example.com/data', 3000)
+ *     .then(response => console.log('成功:', response))
+ *     .catch(err => console.error('失败:', err));
+ */
+async function fetchWithTimeout(url, timeout = 5000) {
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => {
+        controller.abort(); // 中止请求
+        console.log('请求超时');
+    }, timeout);
+
+    try {
+        const response = await fetch(url, {signal: controller.signal});
+        clearTimeout(timeoutId); // 成功响应后清除定时器
+        return response;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('请求超时');
+        } else {
+            throw error; // 其他错误（如网络错误）
+        }
+    }
 }
 
 const newImage = async (fullUrl) => {
     return new Promise(async (resolve, reject) => {
         try {
             // 通过fetch获取图片
-            const response = await fetch(fullUrl);
+            const response = await fetchWithTimeout(fullUrl, 3000);
             // 判断是否正确加载
             if (!response.ok) {
                 return reject(response);
@@ -332,28 +367,27 @@ const newImage = async (fullUrl) => {
             const contentLength = response.headers.get('content-length');
 
             // 读取二进制数据
-            const blob = await response.blob();
+            const blob    = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
 
             // 创建并加载图片
-            const img = new Image();
-            img.alt = fullUrl;
-            img.src = blobUrl;
-            img.onload = (evt) => {
+            const img   = new Image();
+            img.alt     = fullUrl;
+            img.src     = blobUrl;
+            img.onload  = (evt) => {
                 // 释放内存
                 URL.revokeObjectURL(blobUrl);
 
                 // 更新返回值
                 resolve({
-                    $img         : img,
-                    contentLength: contentLength,
+                    $img: img, contentLength: contentLength,
                 });
             }
             img.onerror = (evt) => {
                 reject(evt);
             };
         } catch (e) {
-            console.info(`Load img failed: ${e}`);
+            console.log(`Load img failed: ${e}`);
         }
     });
 }
@@ -366,16 +400,16 @@ const newCell = async (imageObj, debug) => {
 
     try {
         // 生成图片
-        const res = await newImage(imageObj.fullUrl);
-        const $img = res.$img;
+        const res      = await newImage(imageObj.fullUrl);
+        const $img     = res.$img;
         const fileSize = res.contentLength;
 
         /* 更新图片信息 */
         // 图片尺寸
-        imageObj.width = $img.naturalWidth;
-        imageObj.height = $img.naturalHeight;
+        imageObj.width      = $img.naturalWidth;
+        imageObj.height     = $img.naturalHeight;
         imageObj.pixelCount = $img.naturalWidth * $img.naturalHeight;
-        imageObj.sizeType = 'small';
+        imageObj.sizeType   = 'small';
         if (200 * 200 > imageObj.pixelCount) {
             imageObj.sizeType = 'small';
         }
@@ -394,7 +428,7 @@ const newCell = async (imageObj, debug) => {
             imageObj.layout = 'square';
         }
         // 文件大小
-        imageObj.fileSize = fileSize;
+        imageObj.fileSize         = fileSize;
         imageObj.formatedFileSize = formatBytes(fileSize, 0);
 
         // 内容模板
@@ -447,7 +481,7 @@ const newCell = async (imageObj, debug) => {
     `;
 
         // 创建临时元素
-        const $tempDiv = document.createElement('div');
+        const $tempDiv     = document.createElement('div');
         $tempDiv.innerHTML = html;
 
         // 添加图片到 .img-container
@@ -461,7 +495,7 @@ const newCell = async (imageObj, debug) => {
         return $tempDiv.firstChild;
     } catch (e) {
         const res = await e;
-        console.info(res);
+        console.log(res);
     }
 }
 
@@ -470,7 +504,7 @@ const newCell = async (imageObj, debug) => {
  */
 const clearImageList = () => {
     // Nodes
-    const $resultImage = document.querySelector('.resultImage');
+    const $resultImage     = document.querySelector('.resultImage');
     // 清空内容
     $resultImage.innerHTML = '';
     // 更新总数
@@ -498,6 +532,8 @@ const clearImageList = () => {
 const addImageList = async (imageInfoList) => {
     // Args
     if (!imageInfoList || 1 > imageInfoList.length) {
+        // 隐藏加载状态
+        toggleLoadingDisplayStatus(false);
         return;
     }
 
@@ -510,7 +546,6 @@ const addImageList = async (imageInfoList) => {
     updateSelectedCount(0);
 
     // 遍历每一个图片信息
-    console.time('解析预览图');
     let count = 0;
     return Promise.all(imageInfoList.map(async (info, index) => {
         // 构建 cell
@@ -529,7 +564,6 @@ const addImageList = async (imageInfoList) => {
     }).finally(() => {
         // 隐藏加载状态
         toggleLoadingDisplayStatus(false);
-        console.timeEnd('解析预览图');
     });
 }
 
@@ -539,17 +573,14 @@ const addImageList = async (imageInfoList) => {
  */
 const newFilter = (size, format, layout, url) => {
     // Nodes
-    const sizeFilter = size ? size : document.querySelector('[name="filter[size]"]').value;
+    const sizeFilter   = size ? size : document.querySelector('[name="filter[size]"]').value;
     const formatFilter = format ? format : document.querySelector('[name="filter[format]"]').value;
     const layoutFilter = layout ? layout : document.querySelector('[name="filter[layout]"]').value;
-    const urlFilter = url ? url : document.querySelector('[name="filter[url]"]').value;
+    const urlFilter    = url ? url : document.querySelector('[name="filter[url]"]').value;
 
     // Query
     return {
-        size  : sizeFilter,
-        format: formatFilter,
-        layout: layoutFilter,
-        url   : urlFilter,
+        size: sizeFilter, format: formatFilter, layout: layoutFilter, url: urlFilter,
     };
 }
 
@@ -566,7 +597,7 @@ const sortCellByAttribute = (attrName, isAsc) => {
     // 数字格式的属性
     const numberAttributeList = ['index', 'pixelCount', 'fileSize',];
     // 是否数字属性
-    let isNum = 0 < numberAttributeList.find((attr) => {
+    let isNum                 = 0 < numberAttributeList.find((attr) => {
         return attrName === attr
     }).length;
     // 升序/降序
@@ -576,7 +607,7 @@ const sortCellByAttribute = (attrName, isAsc) => {
 
     // Nodes
     const $resultImage = document.querySelector('.resultImage');
-    const $cellList = $resultImage.querySelectorAll(`.cell`);
+    const $cellList    = $resultImage.querySelectorAll(`.cell`);
     if (!$cellList || 1 > $cellList.length) {
         return;
     }
@@ -619,7 +650,7 @@ const sortCellByAttribute = (attrName, isAsc) => {
 const clearCellSelectedStatus = () => {
     // Nodes
     const $resultImage = document.querySelector('.resultImage');
-    const $cellList = $resultImage.querySelectorAll('.cell.selected');
+    const $cellList    = $resultImage.querySelectorAll('.cell.selected');
 
     // 遍历所有并重置选中状态
     for (const $cell of $cellList) {
@@ -674,7 +705,7 @@ const previewAddEventListener = () => {
             // Nodes
             const $cell = evt.target.closest('.cell');
             if ($cell) {
-                const fullUrl = $cell.getAttribute('data-fullUrl');
+                const fullUrl  = $cell.getAttribute('data-fullUrl');
                 const fileName = $cell.getAttribute('data-fileName');
                 // 触发下载事件
                 await download(fullUrl, fileName);
@@ -707,10 +738,8 @@ const previewAddEventListener = () => {
 const download = async (url, saveAsName) => {
     // 消息对象
     const msg = {
-        type: 'download',
-        data: {
-            url       : url,
-            saveAsName: saveAsName,
+        type: 'download', data: {
+            url: url, saveAsName: saveAsName,
         },
     };
 
@@ -719,128 +748,179 @@ const download = async (url, saveAsName) => {
     console.log(`download: ${response}`);
 }
 
+/**
+ * 下载所有图片
+ * @returns {Promise<void>}
+ */
+const downloadAll = async (urlList) => {
+    // Args
+    if (!urlList || 1 > urlList.length) {
+        return;
+    }
+
+    // 遍历下载
+    for (const url of urlList) {
+        await download(url);
+    }
+}
+
 // --------------------
 // Init
 // --------------------
-(() => {
-    /**
-     * 注册页面更新监听器
-     */
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        console.log(`收到消息: ${message.type} Sender: ${sender} Response: ${sendResponse}`);
+/**
+ * 注册页面更新监听器
+ */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(`收到消息: ${message.type} Sender: ${sender} Response: ${sendResponse}`);
 
-        // 是否监听页面
-        const isMonitoringPage = getIsMonitoringPage();
-        if (!isMonitoringPage) {
+    // 是否监听页面
+    const isMonitoringPage = getIsMonitoringPage();
+    if (!isMonitoringPage) {
+        return;
+    }
+
+    // 更新数据
+    if ('tabActivated' === message.type) {
+        // 清空图片列表
+        clearImageList();
+        // 重新获取数据
+        fetchData();
+    } else if ('pageLoading' === message.type) {
+        // 清空图片列表
+        clearImageList();
+        // 重新获取数据
+        fetchData();
+    } else if ('pageUpdated' === message.type) {
+    } else {
+        console.log(`检测到未监听动作：${message.type}`);
+    }
+});
+/**
+ * 注册refresh-button
+ */
+document.querySelector('.refresh-button')?.addEventListener('click', evt => {
+    // 请求数据
+    fetchData();
+});
+/**
+ * 注册FetchImage
+ */
+document.querySelectorAll('.fetch-button').forEach($btn => {
+    $btn.addEventListener('click', () => {
+        fetchData();
+    });
+})
+/**
+ * 注册Download
+ */
+document.querySelectorAll('.down-button').forEach($btn => {
+    $btn.addEventListener('click', async () => {
+        // Node
+        const $selectedCellList = document.querySelectorAll('.resultImage .cell.selected');
+
+        // 提取 src
+        const urlList = Array.from($selectedCellList).map($cell => $cell.getAttribute('data-fullUrl'));
+        if (1 > urlList.length) {
             return;
         }
 
-        // 更新数据
-        if ('tabActivated' === message.type) {
-            // 清空图片列表
-            clearImageList();
-            // 重新获取数据
-            fetchData();
-        } else if ('pageLoading' === message.type) {
-            // 清空图片列表
-            clearImageList();
-            // 重新获取数据
-            fetchData();
-        } else if ('pageUpdated' === message.type) {
-        } else {
-            console.log(`检测到未监听动作：${message.type}`);
+        // 等待下载 url 列表
+        for (let i = 0; i < urlList.length; i++) {
+            // if (i >= 2) {
+            //     break;
+            // }
+            const url = urlList[i];
+            // 下载
+            await download(url);
         }
     });
-    /**
-     * 注册refresh-button
-     */
-    document.querySelector('.refresh-button')?.addEventListener('click', evt => {
-        // 请求数据
-        fetchData();
-    });
-    /**
-     * 注册FetchImage
-     */
-    document.querySelectorAll('.fetch-button').forEach($btn => {
-        $btn.addEventListener('click', () => {
-            fetchData();
+});
+
+/**
+ * 注册滚动到顶部
+ */
+document.querySelectorAll('.top-button').forEach($btn => {
+    $btn.addEventListener('click', (evt) => {
+        document.querySelector('section.result')?.scrollTo({
+            top: 0, behavior: 'smooth',
         });
     })
-    /**
-     * 注册Download
-     */
-    document.querySelectorAll('.down-button').forEach($btn => {
-        $btn.addEventListener('click', async () => {
-            // Node
-            const $selectedCellList = document.querySelectorAll('.resultImage .cell.selected');
+});
 
-            // 提取 src
-            const urlList = Array.from($selectedCellList).map($cell => $cell.getAttribute('data-fullUrl'));
-            if (1 > urlList.length) {
-                return;
-            }
+/**
+ * 注册过滤器事件
+ */
+document.querySelectorAll('.filter-list .filter [name*="filter"]').forEach($item => {
+    // 标签名称
+    const tagName = $item.tagName.toLowerCase();
 
-            // 等待下载 url 列表
-            for (let i = 0; i < urlList.length; i++) {
-                // if (i >= 2) {
-                //     break;
-                // }
-                const url = urlList[i];
-                // 下载
-                await download(url);
-            }
+    // select
+    if ('select' === tagName) {
+        $item.addEventListener('change', (evt) => {
+            // 清除所有cell选中状态
+            clearCellSelectedStatus();
+            // 过滤数据
+            filterData();
+
+            console.log(`Filter: ${evt.currentTarget.name}=${evt.currentTarget.value}`)
         });
-    });
-
-    /**
-     * 注册滚动到顶部
-     */
-    document.querySelectorAll('.top-button').forEach($btn => {
-        $btn.addEventListener('click', (evt) => {
-            document.querySelector('section.result')?.scrollTo({
-                top     : 0,
-                behavior: 'smooth',
-            });
-        })
-    });
-
-    /**
-     * 注册过滤器事件
-     */
-    document.querySelectorAll('.filter-list .filter [name*="filter"]').forEach($item => {
-        // 标签名称
-        const tagName = $item.tagName.toLowerCase();
-
-        // select
-        if ('select' === tagName) {
-            $item.addEventListener('change', (evt) => {
+    }
+    // input
+    else if ('input' === tagName) {
+        $item.addEventListener('keypress', (evt) => {
+            // 监听回车
+            if (13 === evt.keyCode) {
                 // 清除所有cell选中状态
                 clearCellSelectedStatus();
                 // 过滤数据
                 filterData();
+                // 阻止默认事件
+                evt.preventDefault();
+            }
+        });
+    }
+});
 
-                console.log(`Filter: ${evt.currentTarget.name}=${evt.currentTarget.value}`)
-            });
-        }
-        // input
-        else if ('input' === tagName) {
-            $item.addEventListener('keypress', (evt) => {
-                // 监听回车
-                if (13 === evt.keyCode) {
-                    // 清除所有cell选中状态
-                    clearCellSelectedStatus();
-                    // 过滤数据
-                    filterData();
-                    // 阻止默认事件
-                    evt.preventDefault();
-                }
-            });
-        }
-    });
+/**
+ * 注册全选按钮事件
+ */
+document.querySelector('.select-all')?.addEventListener('click', (evt) => {
+    // Nodes
+    const $cellList          = document.querySelectorAll('.resultImage .cell');
+    const $selectAllButton   = document.querySelector('.select-all');
+    const $unselectAllButton = document.querySelector('.unselect-all');
 
-    // 获取数据
-    fetchData();
+    // 选择全部
+    for (const $cell of $cellList) {
+        toggleCellSelectedStatus($cell, true);
+    }
 
-    // 注册预览图复选按钮事件
-    previewAddEventListener();
-})();
+    // 隐藏全选、显示取消全选
+    $selectAllButton.style.display   = 'none';
+    $unselectAllButton.style.display = 'inline-flex';
+});
+
+/**
+ * 注册不选按钮事件
+ */
+document.querySelector('.unselect-all')?.addEventListener('click', (evt) => {
+    // Nodes
+    const $cellList          = document.querySelectorAll('.resultImage .cell');
+    const $selectAllButton   = document.querySelector('.select-all');
+    const $unselectAllButton = document.querySelector('.unselect-all');
+
+    // 取消选择全部
+    for (const $cell of $cellList) {
+        toggleCellSelectedStatus($cell, false);
+    }
+
+    // 隐藏全选、显示取消全选
+    $selectAllButton.style.display   = 'inline-flex';
+    $unselectAllButton.style.display = 'none';
+});
+
+// 获取数据
+fetchData();
+
+// 注册预览图复选按钮事件
+previewAddEventListener();

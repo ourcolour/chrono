@@ -4,6 +4,7 @@
 @use './media.scss';
 
 #app {
+
   /* loading 遮罩 */
   .loading {
     display         : none; // 默认隐藏
@@ -44,15 +45,20 @@
         justify-content : space-between;
         align-items     : center;
 
-        .text {
-          text-wrap : nowrap;
-          color     : #999;
+        iconpark-icon {
+          margin-right : 4px;
         }
 
         .button-list {
           display     : flex;
           align-items : center;
           column-gap  : 8px;
+
+          .button {
+            display         : inline-flex;
+            justify-content : center;
+            align-items     : center;
+          }
 
           .fetch-button {
           }
@@ -69,6 +75,24 @@
               inset  : 0;
               height : auto;
             }
+          }
+        }
+
+        .right {
+          display         : flex;
+          justify-content : flex-end;
+          align-items     : center;
+
+          .select-all,
+          .unselect-all {
+            display         : inline-flex;
+            justify-content : center;
+            align-items     : center;
+          }
+
+          .unselect-all {
+            // 默认不选
+            display : none;
           }
         }
       }

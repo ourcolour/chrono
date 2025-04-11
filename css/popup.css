@@ -44,14 +44,18 @@
   justify-content: space-between;
   align-items: center;
 }
-#app .container section.top .banner .text {
-  text-wrap: nowrap;
-  color: #999;
+#app .container section.top .banner iconpark-icon {
+  margin-right: 4px;
 }
 #app .container section.top .banner .button-list {
   display: flex;
   align-items: center;
   column-gap: 8px;
+}
+#app .container section.top .banner .button-list .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 #app .container section.top .banner .button-list .down-button {
   display: none;
@@ -63,6 +67,20 @@
 #app .container section.top .banner .button-list .monitor-page label input {
   inset: 0;
   height: auto;
+}
+#app .container section.top .banner .right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+#app .container section.top .banner .right .select-all,
+#app .container section.top .banner .right .unselect-all {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+#app .container section.top .banner .right .unselect-all {
+  display: none;
 }
 #app .container section.top .filter-list {
   display: flex;
