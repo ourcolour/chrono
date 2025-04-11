@@ -12,7 +12,7 @@ const CONFIG          = {
     realtimeFetching: true, // 过滤条件
     filter          : {
         sizeType: null, format: null, layout: null, url: null,
-    }, //
+    },
 }
 
 /**
@@ -198,18 +198,21 @@ const filterData = (filter) => {
 }
 
 /**
- * 切换显示状态
+ * 切换全选、不选显示状态
  */
-const toggleSelectButton = () => {
+const toggleSelectButtonDisplay = (showSelectAll) => {
     // Nodes
     const $selectAllButton   = document.querySelector('.select-all');
     const $unselectAllButton = document.querySelector('.unselect-all');
-    const $cellList          = document.querySelectorAll('.resultImage .cell');
-
-    // 当前 .cell 数量
-    const cellCount = $cellList.length;
 
     // 切换显示状态
+    if (showSelectAll) {
+        $selectAllButton.style.display   = 'inline-flex';
+        $unselectAllButton.style.display = 'none';
+    } else {
+        $selectAllButton.style.display   = 'none';
+        $unselectAllButton.style.display = 'inline-flex';
+    }
 }
 
 /**
@@ -544,6 +547,8 @@ const addImageList = async (imageInfoList) => {
     clearImageList();
     // 更新选中数量
     updateSelectedCount(0);
+    // 显示全选按钮
+    toggleSelectButtonDisplay(true);
 
     // 遍历每一个图片信息
     let count = 0;
@@ -886,9 +891,7 @@ document.querySelectorAll('.filter-list .filter [name*="filter"]').forEach($item
  */
 document.querySelector('.select-all')?.addEventListener('click', (evt) => {
     // Nodes
-    const $cellList          = document.querySelectorAll('.resultImage .cell');
-    const $selectAllButton   = document.querySelector('.select-all');
-    const $unselectAllButton = document.querySelector('.unselect-all');
+    const $cellList = document.querySelectorAll('.resultImage .cell');
 
     // 选择全部
     for (const $cell of $cellList) {
@@ -896,8 +899,7 @@ document.querySelector('.select-all')?.addEventListener('click', (evt) => {
     }
 
     // 隐藏全选、显示取消全选
-    $selectAllButton.style.display   = 'none';
-    $unselectAllButton.style.display = 'inline-flex';
+    toggleSelectButtonDisplay(false);
 });
 
 /**
@@ -905,9 +907,7 @@ document.querySelector('.select-all')?.addEventListener('click', (evt) => {
  */
 document.querySelector('.unselect-all')?.addEventListener('click', (evt) => {
     // Nodes
-    const $cellList          = document.querySelectorAll('.resultImage .cell');
-    const $selectAllButton   = document.querySelector('.select-all');
-    const $unselectAllButton = document.querySelector('.unselect-all');
+    const $cellList = document.querySelectorAll('.resultImage .cell');
 
     // 取消选择全部
     for (const $cell of $cellList) {
@@ -915,8 +915,7 @@ document.querySelector('.unselect-all')?.addEventListener('click', (evt) => {
     }
 
     // 隐藏全选、显示取消全选
-    $selectAllButton.style.display   = 'inline-flex';
-    $unselectAllButton.style.display = 'none';
+    toggleSelectButtonDisplay(true);
 });
 
 // 获取数据
