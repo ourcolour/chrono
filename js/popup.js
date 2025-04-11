@@ -891,7 +891,7 @@ document.querySelectorAll('.filter-list .filter [name*="filter"]').forEach($item
  */
 document.querySelector('.select-all')?.addEventListener('click', (evt) => {
     // Nodes
-    const $cellList = document.querySelectorAll('.resultImage .cell');
+    const $cellList = document.querySelectorAll('.resultImage .cell:not(.exclude)');
 
     // 选择全部
     for (const $cell of $cellList) {
